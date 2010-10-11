@@ -22,14 +22,17 @@
 package org.jgroups.samples.server;
 
 import com.google.inject.Inject;
+import org.jboss.Chat;
+import org.jboss.ChatCallback;
 import org.jboss.errai.bus.client.api.Message;
 import org.jboss.errai.bus.client.api.base.MessageBuilder;
 import org.jboss.errai.bus.client.framework.MessageBus;
 import org.jboss.errai.bus.server.annotations.Command;
 import org.jboss.errai.bus.server.annotations.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.naming.InitialContext;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /*
@@ -49,18 +52,60 @@ import java.util.List;
  */
 
 @Service
-public class ChatService {
+public class ChatService implements ChatCallback {
 
     @Inject
     MessageBus bus;
 
-    private List<String> usernames = new ArrayList<String>();
+    private Set<String> usernames = new HashSet<String>();
+    private Chat chat = null;
 
     public ChatService() {
-        // register callbacks with mbean
+        // register callbacks with chat service
+        try {
+            InitialContext ctx = new InitialContext();
+            Chat chat = (Chat)ctx.lookup("jgroups/Chat");
+            chat.addListener(this);
+        } catch (Exception e) {
+            System.out.println("Seems to be running in GWT hosted mode ...");
+        }
+    }
 
-        // jndi lookup
-        // add callback
+    /**
+     * Cluster callback
+     * @param msg
+     */
+    public void postMessage(String msg) {
+
+        // received from cluster, notify web clients
+        messageToClients(msg);
+    }
+
+    /**
+     * Cluster callback
+     * @param name
+     * @param joined
+     */
+    public void postMemberJoinedOrLeft(String name, boolean joined) {
+        // received from cluster, notify web clients
+        if(joined)
+            newUser(name);
+    }
+
+    /**
+     * register new user and notify web clients
+     * @param name
+     */
+    private void newUser(String name)
+    {
+        usernames.add(name);
+
+        // all the others get updated
+        MessageBuilder.createMessage()
+                .toSubject("UserManagement")
+                .command("update")
+                .with("currentUsers", usernames)
+                .noErrorHandling().sendNowWith(bus);
     }
 
     @Command("login")
@@ -80,14 +125,12 @@ public class ChatService {
 
         if(!nameTaken)
         {
-            usernames.add(name);
+            // web clients
+            newUser(name);
 
-            // all the others get updated
-            MessageBuilder.createMessage()
-                    .toSubject("UserManagement")
-                    .command("update")
-                    .with("currentUsers", usernames)
-                    .noErrorHandling().sendNowWith(bus);
+            // cluster members
+            if(chat!=null)
+                chat.memberJoinedOrLeft(name, true);
         }
 
     }
@@ -95,16 +138,38 @@ public class ChatService {
     @Command("broadcast")
     public void broadcast(Message message)
     {
-        System.out.println("Broadcast: " + message.get(String.class, "text"));
+        String payload = message.get(String.class, "text");
+        System.out.println("Broadcast: " + payload);
 
-        // lookup chat bean
+        // notify both web clients and cluster members
+        messageToClients(payload);
+        messageToMembers(payload);
+    }
 
-        // invoke method        
+    /**
+     * Notify cluster members
+     * @param text
+     */
+    public void messageToMembers(String text)
+    {
+        if(null==chat) return;
 
+        chat.postMessage(text);
+
+    }
+
+    /**
+     * Notify web clients
+     * @param text
+     */
+    public void messageToClients(String text)
+    {
+        // web clients
         MessageBuilder.createMessage()
                 .toSubject("ChatClient")
                 .signalling()
-                .with("text", message.get(String.class, "text"))
+                .with("text", text)
                 .done().sendNowWith(bus);
+
     }
 }

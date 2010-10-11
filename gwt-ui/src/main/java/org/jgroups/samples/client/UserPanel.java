@@ -24,6 +24,7 @@ import org.jboss.errai.bus.client.api.MessageCallback;
 import org.jboss.errai.bus.client.framework.MessageBus;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author: Heiko Braun <hbraun@redhat.com>
@@ -50,8 +51,8 @@ public class UserPanel extends LayoutPanel {
 
                 if("update".equals(message.getCommandType()))
                 {
-                    List<String> usernames = (List<String>)
-                            message.get(List.class, "currentUsers");
+                    Set<String> usernames = (Set<String>)
+                            message.get(Set.class, "currentUsers");
 
                     root.removeItems();
                     for(String name : usernames)

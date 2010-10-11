@@ -17,9 +17,8 @@ import java.io.IOException;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 /**
@@ -32,12 +31,11 @@ public class Chat implements GroupMembershipListener, ChatMBean {
     private volatile boolean running;
     private long             view_id=0;
     private ClusterPartition partition;
-    private final Set<String> users=new HashSet<String>();
 
     private static final String SERVICE_NAME="ChatDemo";
     private static final int SERVER_PORT=7888;
 
-    List<ChatCallback> listener = new ArrayList<ChatCallback>();
+    List<ChatCallback> listener = new CopyOnWriteArrayList<ChatCallback>();
 
     private String jndiName = "jgroups/Chat";
 
@@ -127,7 +125,6 @@ public class Chat implements GroupMembershipListener, ChatMBean {
 
         System.out.println("Closing socket " + srv_sock.getLocalSocketAddress());
         Util.close(srv_sock);
-        users.clear();
     }
 
     public void receive(Data data) {
@@ -173,22 +170,20 @@ public class Chat implements GroupMembershipListener, ChatMBean {
         sendToAllClients(new Data(Data.MESSAGE, msg));
     }
 
+    /**
+     * HA invocation
+     */
     public void memberJoinedOrLeft(String user, boolean joined) {
         Data data=new Data(joined? Data.JOIN : Data.LEAVE, user);
-        if(joined)
-            users.add(user);
-        else
-            users.remove(user);
-        System.out.println("users = " + users);
         sendToAllClients(data);
-
-
     }
 
+    /**
+     * HA invocation
+     */
     public void membershipChanged(List<ClusterNode> clusterNodes, List<ClusterNode> clusterNodes1, List<ClusterNode> clusterNodes2) {
         if(partition != null && partition.getCurrentViewId() > view_id) {
             view_id=partition.getCurrentViewId();
-            System.out.println("view change: " + getMembers());
             sendToAllClients(new Data(Data.VIEW, getMembers()));
         }
     }

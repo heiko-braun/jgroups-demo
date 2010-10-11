@@ -8,6 +8,7 @@
     <property name="service.binary" value="jgroups-chat-1.0-SNAPSHOT.zip"/>
 
     <property name="deploy.path" value="${jboss.home}${jboss.deploy.path}"/>
+    <property name="frontend.binary" value="chat-ui-1.0-SNAPSHOT.war"/>
     
     <target name="service-archive" description="Deploy the service archive">        
         <delete dir="${deploy.path}/${service.archive}"/>
@@ -17,8 +18,7 @@
 
 
     <target name="ui-frontend" description="Deploy the UI frontend">
-        <!--copy todir="${jboss.deploy.full}" file="${build.ui.frontend.target}" overwrite="true"/-->
-        <echo>TODO: copy GWT frontend</echo>
+        <copy todir="${deploy.path}" file="gwt-ui/target/${frontend.binary}" overwrite="true" verbose="true"/>
     </target>
 
     <target name="all" depends="service-archive, ui-frontend">
