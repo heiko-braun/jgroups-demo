@@ -1,5 +1,6 @@
 package org.jboss;
 
+import org.jboss.errai.bus.server.annotations.ExposeEntity;
 import org.jgroups.util.Streamable;
 import org.jgroups.util.Util;
 
@@ -13,6 +14,7 @@ import java.util.Set;
  * @author Bela Ban
  * @version $Id$
  */
+@ExposeEntity
 public class Data implements Streamable {
     public static final int MESSAGE   = 1; // client to server, server to client
     public static final int VIEW      = 2; // server to client

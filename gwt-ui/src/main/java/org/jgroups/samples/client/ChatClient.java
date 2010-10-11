@@ -17,84 +17,71 @@ package org.jgroups.samples.client;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.KeyboardListener;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
 import org.gwt.mosaic.ui.client.DeckLayoutPanel;
 import org.gwt.mosaic.ui.client.MessageBox;
-import org.gwt.mosaic.ui.client.layout.BorderLayout;
-import org.gwt.mosaic.ui.client.layout.BoxLayout;
-import org.gwt.mosaic.ui.client.layout.BoxLayoutData;
-import org.gwt.mosaic.ui.client.layout.LayoutPanel;
+import org.gwt.mosaic.ui.client.StackLayoutPanel;
+import org.gwt.mosaic.ui.client.layout.*;
 import org.jboss.errai.bus.client.ErraiBus;
 import org.jboss.errai.bus.client.api.Message;
 import org.jboss.errai.bus.client.api.MessageCallback;
 import org.jboss.errai.bus.client.api.base.MessageBuilder;
 import org.jboss.errai.bus.client.framework.MessageBus;
-import org.jboss.errai.bus.client.protocols.MessageParts;
-import org.jboss.errai.workspaces.client.api.ProvisioningCallback;
-import org.jboss.errai.workspaces.client.api.WidgetProvider;
-import org.jboss.errai.workspaces.client.api.annotations.LoadTool;
 
 /**
  * @author: Heiko Braun <hbraun@redhat.com>
  * @date: Oct 7, 2010
  */
-@LoadTool(name="Chat", group="Views")
-public class ChatClient implements WidgetProvider {
-
-    private DeckLayoutPanel deck;
-    private TextBox username;
+public class ChatClient extends DeckLayoutPanel {
 
     MessageBus bus = ErraiBus.get();
-
+   
     private TextArea textArea;
     private TextBox input;
+    private String username;
+    
+    public ChatClient() {
+        super();
+        init();
+    }
 
-    public void provideWidget(ProvisioningCallback callback) {
-        deck = new DeckLayoutPanel();
+    public void init() {
 
-        LayoutPanel login = new LayoutPanel(new BoxLayout(BoxLayout.Orientation.VERTICAL));
-        username = new TextBox();
-        login.add(new Label("Username"));
-        login.add(username);
-        login.add(new Button("Login", new ClickHandler()
-        {
-            public void onClick(ClickEvent clickEvent) {
-                MessageBuilder.createMessage()
-                        .toSubject("ChatService")
-                        .command("login")
-                        .with(MessageParts.ReplyTo, "ChatClient")
-                        .with("username", username.getText())
-                        .done().sendNowWith(bus);
-
-            }
-        }
-        ));
-
-        deck.add(login);
+        this.add(new LoginPanel());
 
         textArea = new TextArea();
-        textArea.setCharacterWidth(50);
-        textArea.setVisibleLines(5);
+        textArea.setEnabled(false);        
         input = new TextBox();
+        input.addKeyDownHandler(new KeyDownHandler()
+        {
+            public void onKeyDown(KeyDownEvent keyDownEvent) {
+                if(keyDownEvent.getNativeKeyCode() == 13)
+                    sendMessage();
+            }
+        });
+
         LayoutPanel chatPanel = new LayoutPanel(new BorderLayout());
+        chatPanel.add(textArea);
+
         LayoutPanel submitPanel = new LayoutPanel(new BoxLayout(BoxLayout.Orientation.HORIZONTAL));
+        submitPanel.setPadding(0);
         submitPanel.add(input, new BoxLayoutData(BoxLayoutData.FillStyle.BOTH));
         submitPanel.add(new Button("Send", new ClickHandler()
         {
             public void onClick(ClickEvent clickEvent) {
-                MessageBuilder.createMessage()
-                        .toSubject("ChatService")
-                        .command("broadcast")
-                        .with("message", input.getText())
-                        .done().sendNowWith(bus);
-                input.setText("");
+                sendMessage();
             }
         }));
-        chatPanel.add(textArea);
-        chatPanel.add(submitPanel);
 
-        deck.add(chatPanel);
-        deck.showWidget(0);
+        chatPanel.add(submitPanel, new BorderLayoutData(BorderLayout.Region.SOUTH, "50px"));
+
+        this.add(chatPanel);
+        this.showWidget(0);
 
         // login callback
         bus.subscribe("ChatClient", new MessageCallback()
@@ -102,25 +89,28 @@ public class ChatClient implements WidgetProvider {
             public void callback(Message message) {
 
                 if("loginSuccess".equals(message.getCommandType()))
-                {
-                    MessageBox.confirm("Login Successful", "Have fun!",
-                            new MessageBox.ConfirmationCallback()
-                            {
-                                public void onResult(boolean b) {
-                                    deck.showWidget(1);
-                                }
-                            });
-
+                {                    
+                    ChatClient.this.username = message.get(String.class, "username");
+                    ChatClient.this.showWidget(1);
+                    ChatClient.this.layout();
                 }
                 else
                 {
                     String prev = textArea.getText()+"\n";
-                    textArea.setText(prev+message.get(String.class, "message"));
+                    textArea.setText(prev+message.get(String.class, "text"));
                 }
             }
         });
 
-        callback.onSuccess(deck);
+    }
+
+    private void sendMessage() {
+        MessageBuilder.createMessage()
+                .toSubject("ChatService")
+                .command("broadcast")
+                .with("text", username + ": " +input.getText())
+                .done().sendNowWith(bus);
+        input.setText("");
     }
 }
 

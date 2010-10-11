@@ -22,6 +22,10 @@
 package org.jgroups.samples.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import org.gwt.mosaic.ui.client.CaptionLayoutPanel;
+import org.gwt.mosaic.ui.client.StackLayoutPanel;
+import org.gwt.mosaic.ui.client.WindowPanel;
+import org.gwt.mosaic.ui.client.layout.*;
 
 /*
  * Copyright 2009 JBoss, a divison Red Hat, Inc
@@ -41,7 +45,37 @@ import com.google.gwt.core.client.EntryPoint;
 
 public class Bootstrap implements EntryPoint
 {
-  public void onModuleLoad() {
+    private StackLayoutPanel stack;
 
-  }
+    public void onModuleLoad() {
+
+        WindowPanel window = new WindowPanel("JGroups Chat");
+        window.setAnimationEnabled(true);        
+        // ------------------
+
+        stack = new StackLayoutPanel();
+        stack.setAnimationEnabled(true);
+
+
+        stack.add(new UserPanel(), "Users");
+        stack.add(new LayoutPanel(), "Cluster");
+
+        final LayoutPanel lefthand = new LayoutPanel(new BoxLayout(BoxLayout.Orientation.VERTICAL));
+        lefthand.setPadding(0);
+        lefthand.add(stack, new BoxLayoutData(BoxLayoutData.FillStyle.BOTH, true));
+
+        stack.showStack(0);
+        
+        // ------------------
+        LayoutPanel main = new LayoutPanel(new BorderLayout());
+        main.setPadding(2);
+        main.add(new ChatClient());
+        main.add(lefthand, new BorderLayoutData(BorderLayout.Region.WEST, "180px"));
+        window.setWidget(main);
+
+        // ------------------
+        window.setAnimationEnabled(true);
+        window.setSize("800px", "600px");
+        window.center();
+    }
 }

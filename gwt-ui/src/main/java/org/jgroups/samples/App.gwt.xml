@@ -23,9 +23,12 @@
 
     <inherits name="org.jboss.errai.common.ErraiCommon"/>
     <inherits name="org.jboss.errai.bus.ErraiBus"/>
-    <inherits name="org.jboss.errai.ioc.Container"/>
-    <inherits name="org.jboss.errai.workspaces.ErraiWorkspaces"/>
-        
+
+    <!-- Inherit Mosaic Web Toolkit stuff.                          -->
+    <inherits name='org.gwt.mosaic.Mosaic' />
+    <inherits name="org.gwt.mosaic.theme.aegean.AegeanResources" />
+    <inherits name='org.gwt.mosaic.theme.aegean.Aegean' />
+
     <entry-point class='org.jgroups.samples.client.Bootstrap'/>
-    
+
 </module>

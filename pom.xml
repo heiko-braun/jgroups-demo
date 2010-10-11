@@ -22,7 +22,7 @@
     </properties>
 
     <modules>
-        <!--module>gwt-ui</module-->
+        <module>gwt-ui</module>
         <module>jboss</module>
         <module>shared</module>
     </modules>

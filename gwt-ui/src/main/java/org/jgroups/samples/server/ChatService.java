@@ -61,10 +61,12 @@ public class ChatService {
     @Command("login")
     public void login(Message message)
     {
-        System.out.println(message.get(String.class, "username"));
+        String name = message.get(String.class, "username");
+        System.out.println(name);
         MessageBuilder.createConversation(message)
                 .subjectProvided()
                 .command("loginSuccess")
+                .with("username", name)
                 .done().sendNowWith(bus);
 
     }
@@ -81,7 +83,7 @@ public class ChatService {
         MessageBuilder.createMessage()
                 .toSubject("ChatClient")
                 .signalling()
-                .with("message", message.get(String.class, "message"))
+                .with("text", message.get(String.class, "text"))
                 .done().sendNowWith(bus);
     }
 }
