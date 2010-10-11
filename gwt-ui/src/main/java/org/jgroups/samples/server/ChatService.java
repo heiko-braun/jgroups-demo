@@ -28,6 +28,9 @@ import org.jboss.errai.bus.client.framework.MessageBus;
 import org.jboss.errai.bus.server.annotations.Command;
 import org.jboss.errai.bus.server.annotations.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /*
  * Copyright 2009 JBoss, a divison Red Hat, Inc
@@ -51,6 +54,8 @@ public class ChatService {
     @Inject
     MessageBus bus;
 
+    private List<String> usernames = new ArrayList<String>();
+
     public ChatService() {
         // register callbacks with mbean
 
@@ -62,12 +67,28 @@ public class ChatService {
     public void login(Message message)
     {
         String name = message.get(String.class, "username");
-        System.out.println(name);
+
+        boolean nameTaken = usernames.contains(name);
+
+        // the client which logs in
+        String command = nameTaken ? "loginFailure" : "loginSuccess";
         MessageBuilder.createConversation(message)
                 .subjectProvided()
-                .command("loginSuccess")
+                .command(command)
                 .with("username", name)
                 .done().sendNowWith(bus);
+
+        if(!nameTaken)
+        {
+            usernames.add(name);
+
+            // all the others get updated
+            MessageBuilder.createMessage()
+                    .toSubject("UserManagement")
+                    .command("update")
+                    .with("currentUsers", usernames)
+                    .noErrorHandling().sendNowWith(bus);
+        }
 
     }
 

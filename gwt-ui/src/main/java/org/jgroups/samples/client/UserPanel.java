@@ -15,7 +15,6 @@
  */
 package org.jgroups.samples.client;
 
-import com.google.gwt.user.client.ui.HTML;
 import org.gwt.mosaic.ui.client.layout.LayoutPanel;
 import org.gwt.mosaic.ui.client.tree.FastTree;
 import org.gwt.mosaic.ui.client.tree.FastTreeItem;
@@ -23,6 +22,8 @@ import org.jboss.errai.bus.client.ErraiBus;
 import org.jboss.errai.bus.client.api.Message;
 import org.jboss.errai.bus.client.api.MessageCallback;
 import org.jboss.errai.bus.client.framework.MessageBus;
+
+import java.util.List;
 
 /**
  * @author: Heiko Braun <hbraun@redhat.com>
@@ -43,14 +44,19 @@ public class UserPanel extends LayoutPanel {
         root = tree.addItem("Chat");
         this.add(tree);
 
-        bus.subscribe("ChatClient", new MessageCallback()
+        bus.subscribe("UserManagement", new MessageCallback()
         {
             public void callback(Message message) {
 
-                if("loginSuccess".equals(message.getCommandType()))
+                if("update".equals(message.getCommandType()))
                 {
-                    String username = message.get(String.class, "username");
-                    root.addItem(username);
+                    List<String> usernames = (List<String>)
+                            message.get(List.class, "currentUsers");
+
+                    root.removeItems();
+                    for(String name : usernames)
+                        root.addItem(name);
+
                     root.setState(true);
                 }
             }

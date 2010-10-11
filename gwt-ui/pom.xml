@@ -47,11 +47,59 @@
             <version>${errai.version}</version>
         </dependency>
 
+        <!-- all errai package are installed with the service archive -->
         <dependency>
             <groupId>org.jboss.errai</groupId>
             <artifactId>errai-bus</artifactId>
             <version>${errai.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>dom4j</groupId>
+                    <artifactId>dom4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.collections</groupId>
+                    <artifactId>google-collections</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javassist</groupId>
+                    <artifactId>javassist</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
+
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>1.6</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+            <version>1.0.b2</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.collections</groupId>
+            <artifactId>google-collections</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.12.1.GA</version>
+            <scope>provided</scope>
+        </dependency>
+
 
         <!-- GWT and GWT Extensions -->
         <dependency>
@@ -95,82 +143,13 @@
 
     <profiles>
         <profile>
-            <id>jboss6</id>
-            <properties>
-                <webDescriptor>jboss6</webDescriptor>
-            </properties>
+            <id>hosted</id>
             <dependencies>
-
-                <!-- all errai package are installed with the service archive -->
                 <dependency>
                     <groupId>org.jboss.errai</groupId>
                     <artifactId>errai-bus</artifactId>
                     <version>${errai.version}</version>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>dom4j</groupId>
-                            <artifactId>dom4j</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>xml-apis</groupId>
-                            <artifactId>xml-apis</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>com.google.collections</groupId>
-                            <artifactId>google-collections</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>javassist</groupId>
-                            <artifactId>javassist</artifactId>
-                        </exclusion>
-                    </exclusions>
                 </dependency>
-
-                <dependency>
-                    <groupId>dom4j</groupId>
-                    <artifactId>dom4j</artifactId>
-                    <version>1.6</version>
-                    <scope>provided</scope>
-                </dependency>
-
-                <dependency>
-                    <groupId>xml-apis</groupId>
-                    <artifactId>xml-apis</artifactId>
-                    <version>1.0.b2</version>
-                    <scope>provided</scope>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.google.collections</groupId>
-                    <artifactId>google-collections</artifactId>
-                    <version>1.0</version>
-                    <scope>provided</scope>
-                </dependency>
-
-                <dependency>
-                    <groupId>javassist</groupId>
-                    <artifactId>javassist</artifactId>
-                    <version>3.12.1.GA</version>
-                    <scope>provided</scope>
-                </dependency>
-
-                <dependency>
-                    <groupId>org.jboss.errai</groupId>
-                    <artifactId>errai-ioc</artifactId>
-                    <version>${errai.version}</version>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>javax.inject</groupId>
-                            <artifactId>javax.inject</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>javax.annotation</groupId>
-                            <artifactId>jsr250-api</artifactId>
-                        </exclusion>
-                    </exclusions>
-                    <scope>provided</scope>
-                </dependency>
-
             </dependencies>
         </profile>
     </profiles>

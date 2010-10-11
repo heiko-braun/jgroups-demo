@@ -89,10 +89,15 @@ public class ChatClient extends DeckLayoutPanel {
             public void callback(Message message) {
 
                 if("loginSuccess".equals(message.getCommandType()))
-                {                    
+                {
                     ChatClient.this.username = message.get(String.class, "username");
                     ChatClient.this.showWidget(1);
                     ChatClient.this.layout();
+                }
+                else if("loginFailure".equals(message.getCommandType()))
+                {
+                    MessageBox.alert("Error", "Username already in use!");
+                    
                 }
                 else
                 {
