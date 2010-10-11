@@ -5,14 +5,5 @@
         <!--<property name="partition"><inject bean="HAPartition"/></property>-->
 
         <annotation>@org.jboss.aop.microcontainer.aspects.jmx.JMX(name="jboss.jgroups:service=Chat",exposedInterface=org.jboss.ChatMBean,registerDirectly=true)</annotation>
-        <!--annotation>@org.jboss.aop.microcontainer.aspects.jndi.JndiBinding(name="jgroups/Chat")</annotation-->
-    </bean>
-
-    <!--aop:lifecycle-configure xmlns:aop="urn:jboss:aop-beans:1.0"
-                             name="DependencyAdvice"
-                             class="org.jboss.aop.microcontainer.aspects.jndi.JndiLifecycleCallback"
-                             classes="@org.jboss.aop.microcontainer.aspects.jndi.JndiBinding"
-                             manager-bean="AspectManager"
-                             manager-property="aspectManager">
-    </aop:lifecycle-configure-->
+    </bean>    
 </deployment>
