@@ -24,7 +24,7 @@
             <version>${project.version}</version>
         </dependency>
 
-        <dependency>
+        <!--dependency>
             <groupId>org.jboss.errai</groupId>
             <artifactId>errai-bus</artifactId>
             <version>${errai.version}</version>
@@ -50,7 +50,7 @@
                     <artifactId>javassist</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>       
+        </dependency-->       
     </dependencies>
 
     <build>        
@@ -67,7 +67,7 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <finalName>errai-cdi-jboss-${project.version}</finalName>
+                            <finalName>jgroups-chat-${project.version}</finalName>
                             <ignoreDirFormatExtensions>true</ignoreDirFormatExtensions>
                             <appendAssemblyId>false</appendAssemblyId>
                             <descriptors>

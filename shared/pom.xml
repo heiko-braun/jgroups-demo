@@ -12,8 +12,12 @@
         <artifactId>chat-demo-parent</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>../</relativePath>
-    </parent>   
+    </parent>
 
+    <properties>
+        <jboss.version>6.0.0.20100911-M5</jboss.version>
+    </properties>
+    
     <dependencies>
 
         <!-- Errai Core -->
@@ -21,7 +25,7 @@
             <groupId>org.jboss.errai</groupId>
             <artifactId>errai-bus</artifactId>
             <scope>provided</scope>
-        </dependency>      
+        </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -29,21 +33,42 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency >
+        <!--dependency>
             <groupId>org.jgroups</groupId>
             <artifactId>jgroups</artifactId>
             <version>2.10.0.GA</version>
+            <scope>provided</scope>
+        </dependency-->
+
+        <dependency > <!-- jboss-6.0.0-M5 -->
+            <groupId>jgroups</groupId>
+            <artifactId>jgroups</artifactId>
+            <version>2.10.0.Beta2</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.jbossas</groupId>
             <artifactId>jboss-as-cluster</artifactId>
-            <version>6.0.0.20100911-M5</version>
+            <version>${jboss.version}</version>
             <scope>provided</scope>
         </dependency>
-      
-       
+
+        <dependency>
+            <groupId>org.jboss.jbossas</groupId>
+            <artifactId>jboss-as-system-jmx</artifactId>
+            <version>${jboss.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.jbossas</groupId>
+            <artifactId>jboss-as-client</artifactId>
+            <version>${jboss.version}</version>
+            <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
+
+
     </dependencies>
 
     <build>
