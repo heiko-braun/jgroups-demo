@@ -23,7 +23,6 @@ import org.jboss.errai.bus.client.api.Message;
 import org.jboss.errai.bus.client.api.MessageCallback;
 import org.jboss.errai.bus.client.framework.MessageBus;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -39,7 +38,6 @@ public class UserPanel extends LayoutPanel {
 
     public UserPanel() {
         super();
-
 
         tree = new FastTree();
         root = tree.addItem("Chat");

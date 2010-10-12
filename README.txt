@@ -11,3 +11,6 @@
 	cd install
 	ant
 
+4. Start JBoss
+
+5. Visit http://localhost:8080/jgroups-chat/App.html
